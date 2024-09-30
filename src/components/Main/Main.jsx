@@ -14,16 +14,41 @@ const Main = () => {
     input,
   } = useContext(Context);
 
+  const handleEnter = (e) => {
+    if (input.trim() === "") {
+      return;
+    }
+    onSent();
+  };
+
   return (
     <div className="main">
       <div className="nav">
-        <p>Gemini 2.0</p>
+        <p>Gemini</p>
         <img src={assets.user_icon} alt="" />
       </div>
       <div className="main-container">
-        {!showResult ? (
+        {showResult ? (
+          <div className="result">
+            <div className="result-title">
+              <img src={assets.user_icon} alt="" />
+              <p>{recentPrompt}</p>
+            </div>
+            <div className="result-data">
+              <img src={assets.gemini_icon} alt="" />
+              {loading ? (
+                <div className="loader">
+                  <hr className="animated-bg" />
+                  <hr className="animated-bg" />
+                  <hr className="animated-bg" />
+                </div>
+              ) : (
+                <p dangerouslySetInnerHTML={{ __html: resultData }}></p>
+              )}
+            </div>
+          </div>
+        ) : (
           <>
-            {" "}
             <div className="greet">
               <p>
                 <span>Hello, Mukund.</span>
@@ -44,30 +69,11 @@ const Main = () => {
                 <img src={assets.message_icon} alt="" />
               </div>
               <div className="card">
-                <p>Improve the readibility of the following code</p>
+                <p>Improve the readability of the following code</p>
                 <img src={assets.code_icon} alt="" />
               </div>
             </div>
           </>
-        ) : (
-          <div className="result">
-            <div className="result-title">
-              <img src={assets.user_icon} alt="" />
-              <p>{recentPrompt}</p>
-            </div>
-            <div className="result-data">
-              <img src={assets.gemini_icon} alt="" />
-              {loading ? (
-                <div className="loader">
-                  <hr />
-                  <hr />
-                  <hr />
-                </div>
-              ) : (
-                <p dangerouslySetInnerHTML={{ __html: resultData }}></p>
-              )}
-            </div>
-          </div>
         )}
 
         <div className="main-bottom">
@@ -77,23 +83,24 @@ const Main = () => {
               value={input}
               type="text"
               placeholder="Enter a prompt here"
+              onKeyDown={(e) => (e.keyCode === 13 ? handleEnter() : null)}
             />
             <div>
-              <img src={assets.gallery_icon} alt="" />
-              <img src={assets.mic_icon} alt="" />
+              <img src={assets.gallery_icon} width={30} alt="" />
+              <img src={assets.mic_icon} width={30} alt="" />
               {input ? (
                 <img
                   onClick={() => onSent()}
-                  onKeyDown={(e) => (e.key === "Enter" ? onSent() : null)}
                   src={assets.send_icon}
+                  width={30}
                   alt=""
                 />
               ) : null}
             </div>
           </div>
           <p className="bottom-info">
-            Gemini may display inaccurate info, including about people. so
-            double-check its responses.
+            Gemini may display inaccurate info, including about people, so
+            double-check its responses. Your privacy and Gemini Apps
           </p>
         </div>
       </div>

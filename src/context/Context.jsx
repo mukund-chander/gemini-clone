@@ -1,11 +1,10 @@
-/* eslint-disable react/prop-types */
 import { createContext, useState } from "react";
-import run from "../config/gemini";
+import runChat from "../config/gemini";
 
 export const Context = createContext();
 
 const ContextProvider = (props) => {
-  const [prevPrompt, setPrevPrompt] = useState([]);
+  const [prevPrompts, setPrevPrompts] = useState([]);
   const [input, setInput] = useState("");
   const [recentPrompt, setRecentPrompt] = useState("");
 
@@ -25,40 +24,41 @@ const ContextProvider = (props) => {
     setShowResult(true);
     let response;
     if (prompt !== undefined) {
-      response = await run(prompt);
+      response = await runChat(prompt);
       setRecentPrompt(prompt);
     } else {
-      setPrevPrompt((prev) => [...prev, input]);
+      setPrevPrompts((prev) => [...prev, input]);
       setRecentPrompt(input);
-      response = await run(input);
+      response = await runChat(input);
     }
     let responseArray = response.split("**");
-    let newResponse = "";
+    let newArray = "";
     for (let i = 0; i < responseArray.length; i++) {
       if (i === 0 || i % 2 !== 1) {
-        newResponse += responseArray[i];
+        newArray += responseArray[i];
       } else {
-        newResponse += "<b>" + responseArray[i] + "</b>";
+        newArray += "<b>" + responseArray[i] + "</b>";
       }
     }
-    let newResponse2 = newResponse.split("*").join("</br>");
-    let newResponseArray = newResponse2.split(" ");
-    for (let i = 0; i < newResponseArray.length; i++) {
-      const nextWord = newResponseArray[i];
+    console.log(newArray);
+
+    responseArray = newArray.split("*").join("</br>").split(" ");
+    for (let i = 0; i < responseArray.length; i++) {
+      const nextWord = responseArray[i];
       delayPara(i, nextWord + " ");
     }
     setLoading(false);
     setInput("");
   };
 
-  const newChat = () => {
+  const newChat = async () => {
     setLoading(false);
     setShowResult(false);
   };
 
   const contextValue = {
-    prevPrompt,
-    setPrevPrompt,
+    prevPrompts,
+    setPrevPrompts,
     onSent,
     setRecentPrompt,
     recentPrompt,
